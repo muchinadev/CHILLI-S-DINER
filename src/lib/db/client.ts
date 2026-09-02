@@ -9,7 +9,15 @@ function createPool() {
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set");
   }
-  return new Pool({ connectionString });
+
+  // Hosted Postgres (Supabase included) requires SSL; local dev Postgres
+  // doesn't speak it at all, so only turn it on for non-local hosts.
+  const isLocalHost = /@(localhost|127\.0\.0\.1)[:/]/.test(connectionString);
+
+  return new Pool({
+    connectionString,
+    ssl: isLocalHost ? undefined : { rejectUnauthorized: false },
+  });
 }
 
 // Reuse the pool across hot reloads in dev instead of leaking connections.

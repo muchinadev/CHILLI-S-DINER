@@ -3,6 +3,7 @@ import Link from "next/link";
 const LINKS = [
   { href: "/admin/analytics", label: "Analytics", icon: "📈", description: "Trends, best-sellers, weekly & monthly" },
   { href: "/admin/customers", label: "Customers", icon: "👥", description: "Who's ordered, how much they've spent" },
+  { href: "/admin/promotions", label: "Promotions", icon: "🏷️", description: "Discount codes for customers" },
   { href: "/admin/deliveries", label: "Deliveries", icon: "🛵", description: "Assign riders, track delivery status" },
   { href: "/admin/inventory", label: "Inventory", icon: "📦", description: "Ingredient stock, low-stock warnings" },
   { href: "/admin/expenses", label: "Expenses", icon: "💵", description: "Ingredients, packaging, gas, and more" },

@@ -16,6 +16,7 @@ export const checkoutSchema = z.object({
   addressText: z.string().trim().optional(),
   instructions: z.string().trim().optional(),
   notes: z.string().trim().optional(),
+  promoCode: z.string().trim().max(20).optional(),
 }).superRefine((data, ctx) => {
   if (data.fulfillmentType === "delivery" && !data.addressText) {
     ctx.addIssue({

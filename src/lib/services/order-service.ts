@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 import { checkoutSchema } from "@/lib/validation/checkout";
 import { getDefaultBusinessId } from "@/lib/data/business";
 import { getProductsByIds } from "@/lib/data/products";
-import { priceCart, PricingError } from "@/lib/services/pricing";
+import { priceCart, PricingError, round2 } from "@/lib/services/pricing";
 import { findOrCreateCustomer, createAddress } from "@/lib/data/customers";
 import { createOrder } from "@/lib/data/orders";
 import { initiatePaymentForOrder } from "@/lib/services/payment-service";
+import { computeDiscount, findValidPromoByCode, incrementPromotionUsage } from "@/lib/data/promotions";
 
 const FLAT_DELIVERY_FEE = 150;
 
@@ -29,6 +30,7 @@ export async function checkoutAction(_prevState: CheckoutState, formData: FormDa
     addressText: formData.get("addressText") || undefined,
     instructions: formData.get("instructions") || undefined,
     notes: formData.get("notes") || undefined,
+    promoCode: formData.get("promoCode") || undefined,
   });
 
   if (!parsed.success) {
@@ -49,6 +51,21 @@ export async function checkoutAction(_prevState: CheckoutState, formData: FormDa
       return { error: error.message };
     }
     throw error;
+  }
+
+  let appliedPromotionId: string | null = null;
+  if (parsed.data.promoCode) {
+    const promotion = await findValidPromoByCode(businessId, parsed.data.promoCode);
+    if (!promotion) {
+      return { error: "That promo code isn't valid or has expired." };
+    }
+    const discount = computeDiscount(promotion, priced.subtotal);
+    priced = {
+      ...priced,
+      discount,
+      total: round2(priced.subtotal + priced.deliveryFee - discount),
+    };
+    appliedPromotionId = promotion.id;
   }
 
   const customer = await findOrCreateCustomer(businessId, {
@@ -74,6 +91,10 @@ export async function checkoutAction(_prevState: CheckoutState, formData: FormDa
     priced,
     changedBy: `customer:${customer.phone}`,
   });
+
+  if (appliedPromotionId) {
+    await incrementPromotionUsage(appliedPromotionId);
+  }
 
   await initiatePaymentForOrder(businessId, order.id, customer.phone);
 

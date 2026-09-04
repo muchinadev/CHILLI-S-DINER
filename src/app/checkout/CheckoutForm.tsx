@@ -65,6 +65,19 @@ export function CheckoutForm() {
       </section>
 
       <section className="rounded-2xl border border-stone-200 bg-white p-4">
+        <label htmlFor="promoCode" className="block text-sm font-medium text-stone-700">
+          Promo code (optional)
+        </label>
+        <input
+          id="promoCode"
+          name="promoCode"
+          placeholder="e.g. WELCOME10"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base uppercase focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+        />
+        <p className="mt-1 text-xs text-stone-400">Any discount is applied when your order is placed.</p>
+      </section>
+
+      <section className="rounded-2xl border border-stone-200 bg-white p-4">
         <h2 className="mb-3 font-semibold text-stone-900">Your details</h2>
         <div className="space-y-3">
           <div>

@@ -73,6 +73,12 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
             <span>Delivery fee</span>
             <span>{formatKes(order.delivery_fee)}</span>
           </div>
+          {Number(order.discount) > 0 ? (
+            <div className="flex justify-between text-green-700">
+              <span>Discount</span>
+              <span>-{formatKes(order.discount)}</span>
+            </div>
+          ) : null}
           <div className="flex justify-between text-base font-bold text-stone-900">
             <span>Total</span>
             <span>{formatKes(order.total)}</span>

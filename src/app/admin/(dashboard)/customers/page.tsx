@@ -16,9 +16,34 @@ export default async function AdminCustomersPage() {
   const session = await getSession();
   const customers = await listCustomers(session!.businessId);
 
+  const winBackCustomers = customers
+    .filter((c) => c.order_count > 0 && customerStatus(c.order_count, c.last_order_at).label === "Inactive")
+    .sort((a, b) => b.total_spent - a.total_spent)
+    .slice(0, 5);
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-stone-900">Customers</h1>
+
+      {winBackCustomers.length > 0 ? (
+        <div className="rounded-2xl bg-white p-4 shadow-sm">
+          <h2 className="mb-1 font-semibold text-stone-900">Win back</h2>
+          <p className="mb-3 text-xs text-stone-500">Haven&apos;t ordered in over 30 days — worth a message.</p>
+          <ul className="divide-y divide-stone-100">
+            {winBackCustomers.map((customer) => (
+              <li key={customer.id} className="flex items-center justify-between gap-3 py-2">
+                <div>
+                  <p className="text-sm font-medium text-stone-900">{customer.name}</p>
+                  <p className="text-xs text-stone-400">{formatKes(customer.total_spent)} lifetime</p>
+                </div>
+                <a href={`tel:${customer.phone}`} className="shrink-0 text-sm font-semibold text-brand">
+                  {customer.phone}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {customers.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">

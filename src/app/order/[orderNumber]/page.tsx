@@ -86,6 +86,12 @@ export default async function OrderTrackingPage({
               <span>Delivery fee</span>
               <span>{Number(order.delivery_fee) > 0 ? formatKes(order.delivery_fee) : "Free"}</span>
             </div>
+            {Number(order.discount) > 0 ? (
+              <div className="flex justify-between text-green-700">
+                <span>Discount</span>
+                <span>-{formatKes(order.discount)}</span>
+              </div>
+            ) : null}
             <div className="flex justify-between text-base font-bold text-stone-900">
               <span>Total</span>
               <span>{formatKes(order.total)}</span>

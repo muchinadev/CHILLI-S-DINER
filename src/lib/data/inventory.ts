@@ -107,3 +107,60 @@ export async function recordPurchase(input: RecordPurchaseInput): Promise<Invent
 function formatQuantity(quantity: number): string {
   return String(quantity);
 }
+
+export type WasteReason =
+  | "spoilage"
+  | "overproduction"
+  | "prep_waste"
+  | "cancelled_order"
+  | "failed_delivery"
+  | "damaged"
+  | "other";
+
+export type RecordWasteInput = {
+  itemId: string;
+  quantity: number;
+  reason: WasteReason;
+  note: string;
+  createdBy: string;
+};
+
+export async function recordWaste(input: RecordWasteInput): Promise<void> {
+  await query(
+    `update inventory_items set quantity_available = greatest(quantity_available - $2, 0) where id = $1`,
+    [input.itemId, input.quantity],
+  );
+  await query(
+    `insert into inventory_transactions (item_id, type, quantity, reference, reason, created_by)
+     values ($1, 'waste', $2, $3, $4, $5)`,
+    [input.itemId, -input.quantity, input.note || null, input.reason, input.createdBy],
+  );
+}
+
+export type WasteTransaction = {
+  id: string;
+  item_id: string;
+  quantity: string;
+  reference: string | null;
+  reason: WasteReason;
+  created_at: string;
+  item_name: string;
+  unit: string;
+  estimated_cost: number;
+};
+
+export async function listRecentWasteTransactions(businessId: string, days = 30): Promise<WasteTransaction[]> {
+  const result = await query<Omit<WasteTransaction, "estimated_cost"> & { cost_per_unit: string }>(
+    `select t.id, t.item_id, t.quantity, t.reference, t.reason, t.created_at,
+            i.name as item_name, i.unit, i.cost_per_unit
+     from inventory_transactions t
+     join inventory_items i on i.id = t.item_id
+     where i.business_id = $1 and t.type = 'waste' and t.created_at >= now() - ($2 || ' days')::interval
+     order by t.created_at desc`,
+    [businessId, days],
+  );
+  return result.rows.map((row) => ({
+    ...row,
+    estimated_cost: Math.abs(Number(row.quantity)) * Number(row.cost_per_unit),
+  }));
+}

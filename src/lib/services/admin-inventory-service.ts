@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/session";
 import { inventoryItemSchema, purchaseSchema } from "@/lib/validation/inventory";
-import { createInventoryItem, recordPurchase } from "@/lib/data/inventory";
+import { wasteSchema } from "@/lib/validation/waste";
+import { createInventoryItem, recordPurchase, recordWaste } from "@/lib/data/inventory";
 import { createExpense, getOrCreateExpenseCategory } from "@/lib/data/expenses";
 
 export type InventoryFormState = { error: string | null };
@@ -83,6 +84,37 @@ export async function recordPurchaseAction(
 
   revalidatePath("/admin/inventory");
   revalidatePath("/admin/expenses");
+  revalidatePath("/admin");
+  return { error: null };
+}
+
+export async function recordWasteAction(
+  _prevState: InventoryFormState,
+  formData: FormData,
+): Promise<InventoryFormState> {
+  const session = await getSession();
+  if (!session) return { error: "You must be signed in." };
+
+  const parsed = wasteSchema.safeParse({
+    itemId: formData.get("itemId"),
+    quantity: formData.get("quantity"),
+    reason: formData.get("reason"),
+    note: formData.get("note") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Please check the form and try again." };
+  }
+
+  await recordWaste({
+    itemId: parsed.data.itemId,
+    quantity: parsed.data.quantity,
+    reason: parsed.data.reason,
+    note: parsed.data.note ?? "",
+    createdBy: `admin:${session.email}`,
+  });
+
+  revalidatePath("/admin/inventory");
   revalidatePath("/admin");
   return { error: null };
 }

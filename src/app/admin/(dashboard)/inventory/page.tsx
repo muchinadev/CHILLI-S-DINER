@@ -1,12 +1,19 @@
 import { getSession } from "@/lib/auth/session";
-import { listInventoryItems } from "@/lib/data/inventory";
-import { formatKes } from "@/lib/format";
+import { listInventoryItems, listRecentWasteTransactions } from "@/lib/data/inventory";
+import { formatKes, formatDateTime } from "@/lib/format";
+import { round2 } from "@/lib/services/pricing";
+import { WASTE_REASON_LABEL } from "@/lib/validation/waste";
 import { PurchaseForm } from "./PurchaseForm";
 import { AddIngredientForm } from "./AddIngredientForm";
+import { WasteForm } from "./WasteForm";
 
 export default async function AdminInventoryPage() {
   const session = await getSession();
-  const items = await listInventoryItems(session!.businessId);
+  const [items, wasteTransactions] = await Promise.all([
+    listInventoryItems(session!.businessId),
+    listRecentWasteTransactions(session!.businessId, 30),
+  ]);
+  const totalWasteCost = round2(wasteTransactions.reduce((sum, t) => sum + t.estimated_cost, 0));
 
   return (
     <div className="space-y-4">
@@ -46,6 +53,35 @@ export default async function AdminInventoryPage() {
       )}
 
       <PurchaseForm items={items} />
+      <WasteForm items={items} />
+
+      <div className="rounded-2xl bg-white p-4 shadow-sm">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-semibold text-stone-900">Waste (last 30 days)</h2>
+          <span className="font-bold text-stone-900">{formatKes(totalWasteCost)}</span>
+        </div>
+        {wasteTransactions.length === 0 ? (
+          <p className="text-sm text-stone-500">No waste recorded — nice.</p>
+        ) : (
+          <ul className="divide-y divide-stone-100">
+            {wasteTransactions.map((t) => (
+              <li key={t.id} className="flex items-center justify-between gap-3 py-3">
+                <div>
+                  <p className="text-sm font-medium text-stone-900">
+                    {Math.abs(Number(t.quantity))} {t.unit} · {t.item_name}
+                  </p>
+                  <p className="text-xs text-stone-400">
+                    {WASTE_REASON_LABEL[t.reason]}
+                    {t.reference ? ` · ${t.reference}` : ""} · {formatDateTime(t.created_at)}
+                  </p>
+                </div>
+                <span className="shrink-0 font-semibold text-stone-900">{formatKes(t.estimated_cost)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       <AddIngredientForm />
     </div>
   );

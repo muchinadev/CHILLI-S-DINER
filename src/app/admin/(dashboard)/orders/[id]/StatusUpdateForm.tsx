@@ -24,7 +24,7 @@ export function StatusUpdateForm({ orderId, nextOptions }: { orderId: string; ne
             name="status"
             value={option}
             disabled={pending}
-            className="rounded-full border border-orange-600 px-4 py-2 text-sm font-semibold text-orange-700 transition hover:bg-orange-50 disabled:opacity-50"
+            className="rounded-full border border-brand px-4 py-2 text-sm font-semibold text-brand-dark transition hover:bg-brand-50 disabled:opacity-50"
           >
             {ADMIN_STATUS_LABEL[option]}
           </button>

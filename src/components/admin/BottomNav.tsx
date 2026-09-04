@@ -22,7 +22,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-medium ${
-                active ? "text-orange-600" : "text-stone-500"
+                active ? "text-brand" : "text-stone-500"
               }`}
             >
               <span className="text-lg leading-none">{item.icon}</span>

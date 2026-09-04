@@ -8,7 +8,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   if (!session) redirect("/admin/login");
 
   return (
-    <div className="flex min-h-dvh flex-col bg-stone-50">
+    <div className="flex min-h-dvh flex-col bg-[var(--background)]">
       <header className="sticky top-0 z-10 border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <div>

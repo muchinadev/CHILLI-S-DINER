@@ -51,7 +51,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           ) : null}
         </div>
         <div className="mt-2 flex items-center justify-between">
-          <span className="font-semibold text-stone-900">{formatKes(product.price)}</span>
+          <span className="text-lg font-bold text-brand">{formatKes(product.price)}</span>
           {soldOut ? (
             <span className="rounded-full bg-stone-100 px-3 py-1.5 text-xs font-semibold text-stone-500">
               Sold out
@@ -61,7 +61,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               type="button"
               onClick={handleAdd}
               className={`rounded-full px-4 py-1.5 text-sm font-semibold text-white transition ${
-                added ? "bg-green-600" : "bg-orange-600 hover:bg-orange-700"
+                added ? "bg-green-600" : "bg-brand hover:bg-brand-dark"
               }`}
             >
               {added ? "Added" : "Add to cart"}

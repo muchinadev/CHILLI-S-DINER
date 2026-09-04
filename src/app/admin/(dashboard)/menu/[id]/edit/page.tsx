@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { getProductById, listCategories } from "@/lib/data/products";
 import { updateProductAction } from "@/lib/services/admin-menu-service";
@@ -34,6 +35,12 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           imageUrl: product.image_url ?? "",
         }}
       />
+      <Link
+        href={`/admin/menu/${product.id}/recipe`}
+        className="block rounded-2xl border border-dashed border-stone-300 bg-white p-4 text-center text-sm font-semibold text-brand"
+      >
+        🧾 Recipe &amp; food cost
+      </Link>
       <DeleteProductButton productId={product.id} />
     </div>
   );

@@ -139,6 +139,13 @@ export async function setProductActive(businessId: string, id: string, isActive:
   );
 }
 
+export async function setProductCostPrice(businessId: string, id: string, costPrice: number): Promise<void> {
+  await query(
+    `update products set cost_price = $3, updated_at = now() where business_id = $1 and id = $2`,
+    [businessId, id, costPrice],
+  );
+}
+
 export async function deleteProduct(businessId: string, id: string): Promise<void> {
   await query(`delete from products where business_id = $1 and id = $2`, [businessId, id]);
 }

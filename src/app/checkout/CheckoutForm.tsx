@@ -21,7 +21,7 @@ export function CheckoutForm() {
     return (
       <div className="rounded-2xl border border-dashed border-stone-300 p-8 text-center text-stone-500">
         <p>Your cart is empty.</p>
-        <Link href="/" className="mt-3 inline-block font-semibold text-orange-600">
+        <Link href="/" className="mt-3 inline-block font-semibold text-brand">
           Browse the menu
         </Link>
       </div>
@@ -75,7 +75,7 @@ export function CheckoutForm() {
               id="name"
               name="name"
               required
-              className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
           <div>
@@ -88,7 +88,7 @@ export function CheckoutForm() {
               type="tel"
               placeholder="0712345678"
               required
-              className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
         </div>
@@ -102,7 +102,7 @@ export function CheckoutForm() {
             onClick={() => setFulfillmentType("delivery")}
             className={`flex-1 rounded-lg border px-4 py-2 text-sm font-semibold ${
               fulfillmentType === "delivery"
-                ? "border-orange-600 bg-orange-50 text-orange-700"
+                ? "border-brand bg-brand-50 text-brand-dark"
                 : "border-stone-300 text-stone-600"
             }`}
           >
@@ -113,7 +113,7 @@ export function CheckoutForm() {
             onClick={() => setFulfillmentType("pickup")}
             className={`flex-1 rounded-lg border px-4 py-2 text-sm font-semibold ${
               fulfillmentType === "pickup"
-                ? "border-orange-600 bg-orange-50 text-orange-700"
+                ? "border-brand bg-brand-50 text-brand-dark"
                 : "border-stone-300 text-stone-600"
             }`}
           >
@@ -133,7 +133,7 @@ export function CheckoutForm() {
                 name="addressText"
                 required
                 placeholder="e.g. Kilimani, Argwings Kodhek Rd, Apt 4B"
-                className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
             <div>
@@ -144,7 +144,7 @@ export function CheckoutForm() {
                 id="instructions"
                 name="instructions"
                 placeholder="e.g. Gate code, landmark"
-                className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
               />
             </div>
           </div>
@@ -162,7 +162,7 @@ export function CheckoutForm() {
           name="notes"
           rows={2}
           placeholder="e.g. No spicy, extra sauce"
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </section>
 
@@ -175,7 +175,7 @@ export function CheckoutForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-orange-600 px-6 py-4 text-base font-semibold text-white transition hover:bg-orange-700 disabled:opacity-60"
+        className="w-full rounded-full bg-brand px-6 py-4 text-base font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
       >
         {pending ? "Placing order..." : `Pay with M-Pesa · ${formatKes(total)}`}
       </button>

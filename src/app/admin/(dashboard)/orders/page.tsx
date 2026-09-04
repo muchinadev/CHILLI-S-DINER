@@ -37,7 +37,7 @@ export default async function AdminOrdersPage({
               key={filter.value}
               href={href}
               className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                active ? "bg-orange-600 text-white" : "bg-white text-stone-600"
+                active ? "bg-brand text-white" : "bg-white text-stone-600"
               }`}
             >
               {filter.label}

@@ -14,7 +14,7 @@ export default async function AdminMenuPage() {
         <h1 className="text-xl font-bold text-stone-900">Menu</h1>
         <Link
           href="/admin/menu/new"
-          className="rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
+          className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
         >
           + Add meal
         </Link>

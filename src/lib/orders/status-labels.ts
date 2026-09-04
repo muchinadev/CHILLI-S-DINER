@@ -41,5 +41,5 @@ export function statusBadgeClass(status: OrderStatus): string {
   if (TERMINAL_NEGATIVE_STATUSES.includes(status)) return "bg-red-100 text-red-700";
   if (status === "delivered") return "bg-green-100 text-green-700";
   if (status === "new" || status === "payment_pending") return "bg-amber-100 text-amber-700";
-  return "bg-orange-100 text-orange-700";
+  return "bg-brand-100 text-brand-dark";
 }

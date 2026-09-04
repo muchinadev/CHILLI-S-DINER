@@ -39,7 +39,7 @@ export function ProductForm({
           name="name"
           required
           defaultValue={defaultValues?.name}
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </div>
 
@@ -52,7 +52,7 @@ export function ProductForm({
           name="description"
           rows={2}
           defaultValue={defaultValues?.description}
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </div>
 
@@ -64,7 +64,7 @@ export function ProductForm({
           id="categoryId"
           name="categoryId"
           defaultValue={defaultValues?.categoryId ?? ""}
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         >
           <option value="">No category</option>
           {categories.map((category) => (
@@ -88,7 +88,7 @@ export function ProductForm({
             step="1"
             required
             defaultValue={defaultValues?.sellingPrice}
-            className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
         <div>
@@ -103,7 +103,7 @@ export function ProductForm({
             step="1"
             required
             defaultValue={defaultValues?.costPrice}
-            className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </div>
       </div>
@@ -120,7 +120,7 @@ export function ProductForm({
           step="1"
           required
           defaultValue={defaultValues?.availableQty}
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </div>
 
@@ -134,7 +134,7 @@ export function ProductForm({
           type="url"
           placeholder="https://..."
           defaultValue={defaultValues?.imageUrl}
-          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
       </div>
 
@@ -158,7 +158,7 @@ export function ProductForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-orange-600 px-6 py-3 font-semibold text-white transition hover:bg-orange-700 disabled:opacity-60"
+        className="w-full rounded-full bg-brand px-6 py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60"
       >
         {pending ? "Saving..." : submitLabel}
       </button>

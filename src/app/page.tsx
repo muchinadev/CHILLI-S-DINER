@@ -25,10 +25,12 @@ export default async function HomePage() {
     <div className="flex min-h-dvh flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-6">
-        <section className="mb-6 rounded-2xl bg-gradient-to-br from-orange-600 to-red-600 p-6 text-white">
-          <p className="text-sm font-medium text-orange-100">{business.name}</p>
-          <h1 className="mt-1 text-2xl font-bold">Home-cooked meals, delivered today</h1>
-          <p className="mt-2 text-sm text-orange-100">Order in minutes. Pay easily with M-Pesa.</p>
+        <section className="mb-6 rounded-2xl bg-brand p-6 text-white">
+          <p className="text-sm font-medium tracking-wide text-brand-100 uppercase">Good food. Every day.</p>
+          <h1 className="mt-1 text-3xl font-semibold [font-family:var(--font-display)]">
+            Home-cooked meals, delivered today
+          </h1>
+          <p className="mt-2 text-sm text-brand-100">Order in minutes. Pay easily with M-Pesa.</p>
         </section>
 
         {products.length === 0 ? (
@@ -38,7 +40,9 @@ export default async function HomePage() {
         ) : (
           Array.from(grouped.entries()).map(([categoryName, items]) => (
             <section key={categoryName} className="mb-8">
-              <h2 className="mb-3 text-lg font-bold text-stone-900">{categoryName}</h2>
+              <h2 className="mb-3 text-xl font-semibold text-brand [font-family:var(--font-display)]">
+                {categoryName}
+              </h2>
               <div className="flex flex-col gap-3">
                 {items.map((product) => (
                   <ProductCard

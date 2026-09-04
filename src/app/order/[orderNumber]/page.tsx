@@ -51,7 +51,7 @@ export default async function OrderTrackingPage({
                 <li key={step} className="flex items-center gap-3">
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                      reached ? "bg-orange-600 text-white" : "bg-stone-200 text-stone-500"
+                      reached ? "bg-brand text-white" : "bg-stone-200 text-stone-500"
                     }`}
                   >
                     {reached ? "✓" : index + 1}
@@ -94,7 +94,7 @@ export default async function OrderTrackingPage({
           <p className="mt-3 text-xs text-stone-400">Placed {formatDateTime(order.created_at)}</p>
         </section>
 
-        <Link href="/" className="mt-6 inline-block font-semibold text-orange-600">
+        <Link href="/" className="mt-6 inline-block font-semibold text-brand">
           ← Back to menu
         </Link>
       </main>

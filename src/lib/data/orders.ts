@@ -108,6 +108,13 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       [order.id, input.changedBy],
     );
 
+    if (input.fulfillmentType === "delivery") {
+      await client.query(
+        `insert into deliveries (order_id, status, delivery_fee) values ($1, 'pending', $2)`,
+        [order.id, input.priced.deliveryFee],
+      );
+    }
+
     await client.query("COMMIT");
     return order;
   } catch (error) {

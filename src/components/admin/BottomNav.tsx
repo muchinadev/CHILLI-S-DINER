@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
   { href: "/admin/menu", label: "Menu", icon: "🍽️" },
+  { href: "/admin/more", label: "More", icon: "☰" },
 ];
 
 export function BottomNav() {

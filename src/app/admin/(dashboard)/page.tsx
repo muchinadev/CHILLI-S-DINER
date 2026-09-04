@@ -1,10 +1,15 @@
+import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { getTodayOverview } from "@/lib/services/dashboard-service";
+import { listLowStockItems } from "@/lib/data/inventory";
 import { formatKes } from "@/lib/format";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
-  const overview = await getTodayOverview(session!.businessId);
+  const [overview, lowStockItems] = await Promise.all([
+    getTodayOverview(session!.businessId),
+    listLowStockItems(session!.businessId),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -12,6 +17,29 @@ export default async function AdminDashboardPage() {
         <h1 className="text-xl font-bold text-stone-900">Today</h1>
         <p className="text-sm text-stone-500">{new Date().toLocaleDateString("en-KE", { dateStyle: "full" })}</p>
       </div>
+
+      {overview.pending > 0 || lowStockItems.length > 0 ? (
+        <div className="space-y-2">
+          {overview.pending > 0 ? (
+            <Link
+              href="/admin/orders?status=new"
+              className="block rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
+            >
+              ⚠️ {overview.pending} order{overview.pending === 1 ? "" : "s"} waiting on payment or confirmation
+            </Link>
+          ) : null}
+          {lowStockItems.map((item) => (
+            <Link
+              key={item.id}
+              href="/admin/inventory"
+              className="block rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+            >
+              ⚠️ {item.name} stock is low ({Number(item.quantity_available)} {item.unit} left, reorder at{" "}
+              {Number(item.reorder_level)})
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Orders" value={String(overview.totalOrders)} />

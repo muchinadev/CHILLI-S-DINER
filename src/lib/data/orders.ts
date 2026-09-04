@@ -1,6 +1,7 @@
 import { PoolClient } from "pg";
 import { pool, query } from "@/lib/db/client";
 import type { PricedOrder } from "@/lib/services/pricing";
+import { deductIngredientsForOrder, restoreIngredientsForOrder } from "@/lib/data/inventory-consumption";
 
 export type OrderStatus =
   | "new"
@@ -30,6 +31,7 @@ export type Order = {
   discount: string;
   total: string;
   notes: string | null;
+  inventory_deducted: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -257,6 +259,23 @@ export async function updateOrderStatus(
     `insert into order_status_history (order_id, from_status, to_status, changed_by) values ($1, $2, $3, $4)`,
     [orderId, order.status, toStatus, changedBy],
   );
+
+  // First time an order is committed to being made (whichever path gets it
+  // there), deduct its recipe ingredients from stock. If it's cancelled
+  // after that, put them back. The flag makes both idempotent regardless
+  // of which status transitions the order actually took.
+  const shouldDeduct = !order.inventory_deducted && (toStatus === "payment_confirmed" || toStatus === "preparing");
+  const shouldRestore = order.inventory_deducted && toStatus === "cancelled";
+
+  if (shouldDeduct) {
+    await deductIngredientsForOrder(runner, orderId, order.order_number, changedBy);
+    await runner.query(`update orders set inventory_deducted = true where id = $1`, [orderId]);
+    updated.rows[0].inventory_deducted = true;
+  } else if (shouldRestore) {
+    await restoreIngredientsForOrder(runner, orderId, order.order_number, changedBy);
+    await runner.query(`update orders set inventory_deducted = false where id = $1`, [orderId]);
+    updated.rows[0].inventory_deducted = false;
+  }
 
   return updated.rows[0];
 }

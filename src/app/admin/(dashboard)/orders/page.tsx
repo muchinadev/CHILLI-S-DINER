@@ -26,7 +26,12 @@ export default async function AdminOrdersPage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-stone-900">Orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-stone-900">Orders</h1>
+        <Link href="/admin/orders/history" className="text-sm font-semibold text-brand-dark">
+          History →
+        </Link>
+      </div>
 
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {FILTERS.map((filter) => {

@@ -11,6 +11,7 @@ import { getLatestPaymentForOrder } from "@/lib/data/payments";
 import { formatKes, formatDateTime } from "@/lib/format";
 import { ADMIN_STATUS_LABEL, statusBadgeClass } from "@/lib/orders/status-labels";
 import { StatusUpdateForm } from "./StatusUpdateForm";
+import { RecordCashPaymentForm } from "./RecordCashPaymentForm";
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -93,9 +94,16 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         </p>
         {payment ? (
           <>
-            <p className="text-sm text-stone-500">Reference: {payment.provider_reference}</p>
+            {payment.provider_reference ? (
+              <p className="text-sm text-stone-500">Reference: {payment.provider_reference}</p>
+            ) : null}
             <p className="text-sm text-stone-500">Provider: {payment.provider}</p>
           </>
+        ) : null}
+        {order.payment_status !== "paid" &&
+        order.status !== "cancelled" &&
+        order.status !== "failed" ? (
+          <RecordCashPaymentForm orderId={order.id} total={Number(order.total)} />
         ) : null}
       </div>
 

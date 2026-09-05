@@ -1,7 +1,7 @@
 import { pool } from "@/lib/db/client";
 import { getPaymentProvider, type PaymentCallback } from "@/lib/payments/provider";
-import { createPayment, getPaymentByReference, markPaymentResolved } from "@/lib/data/payments";
-import { getOrderById, setOrderPaymentStatus, updateOrderStatus } from "@/lib/data/orders";
+import { createPayment, getPaymentByReference, markPaymentResolved, recordCashPayment } from "@/lib/data/payments";
+import { getOrderById, setOrderPaymentStatus, updateOrderStatus, type Order } from "@/lib/data/orders";
 
 export async function initiatePaymentForOrder(businessId: string, orderId: string, phone: string) {
   const order = await getOrderById(businessId, orderId);
@@ -30,6 +30,47 @@ export async function initiatePaymentForOrder(businessId: string, orderId: strin
   await updateOrderStatus(businessId, order.id, "payment_pending", "system:payment");
 
   return result;
+}
+
+export class OrderAlreadyPaidError extends Error {
+  constructor() {
+    super("This order is already marked as paid.");
+    this.name = "OrderAlreadyPaidError";
+  }
+}
+
+/**
+ * Records a manually-collected cash payment (cash-on-pickup or -delivery)
+ * against an order and confirms it, mirroring what handlePaymentCallback
+ * does for M-Pesa — there's just no webhook to wait on.
+ */
+export async function confirmCashPayment(businessId: string, orderId: string, changedBy: string): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    const orderResult = await client.query<Order>(
+      `select * from orders where business_id = $1 and id = $2 for update`,
+      [businessId, orderId],
+    );
+    const order = orderResult.rows[0];
+    if (!order) throw new Error("Order not found");
+    if (order.payment_status === "paid") throw new OrderAlreadyPaidError();
+
+    await recordCashPayment({ orderId: order.id, amount: Number(order.total) }, client);
+    await setOrderPaymentStatus(order.id, "paid", client);
+
+    if (order.status === "new" || order.status === "payment_pending") {
+      await updateOrderStatus(order.business_id, order.id, "payment_confirmed", changedBy, client);
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 /**

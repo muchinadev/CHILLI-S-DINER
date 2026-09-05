@@ -7,6 +7,7 @@ export type Product = {
   name: string;
   description: string | null;
   image_url: string | null;
+  image_content_type: string | null;
   selling_price: string;
   cost_price: string;
   available_qty: number;
@@ -24,6 +25,14 @@ export type ProductCategory = {
   sort_order: number;
 };
 
+// Explicit column list everywhere products are listed/read — image_data is a
+// (potentially large) bytea blob that only the dedicated photo route needs.
+const PRODUCT_COLUMNS = `
+  id, business_id, category_id, name, description, image_url, image_content_type,
+  selling_price, cost_price, available_qty, is_active, available_from, available_until,
+  created_at, updated_at
+`;
+
 export async function listCategories(businessId: string): Promise<ProductCategory[]> {
   const result = await query<ProductCategory>(
     `select id, business_id, name, sort_order
@@ -37,7 +46,7 @@ export async function listCategories(businessId: string): Promise<ProductCategor
 /** Products visible to customers: active, in stock, and within their availability window. */
 export async function listAvailableProducts(businessId: string): Promise<Product[]> {
   const result = await query<Product>(
-    `select * from products
+    `select ${PRODUCT_COLUMNS} from products
      where business_id = $1
        and is_active = true
        and available_qty > 0
@@ -52,7 +61,7 @@ export async function listAvailableProducts(businessId: string): Promise<Product
 /** All products for the admin menu screen, active or not. */
 export async function listAllProducts(businessId: string): Promise<Product[]> {
   const result = await query<Product>(
-    `select * from products where business_id = $1 order by created_at desc`,
+    `select ${PRODUCT_COLUMNS} from products where business_id = $1 order by created_at desc`,
     [businessId],
   );
   return result.rows;
@@ -60,7 +69,7 @@ export async function listAllProducts(businessId: string): Promise<Product[]> {
 
 export async function getProductById(businessId: string, id: string): Promise<Product | null> {
   const result = await query<Product>(
-    `select * from products where business_id = $1 and id = $2`,
+    `select ${PRODUCT_COLUMNS} from products where business_id = $1 and id = $2`,
     [businessId, id],
   );
   return result.rows[0] ?? null;
@@ -70,10 +79,21 @@ export async function getProductById(businessId: string, id: string): Promise<Pr
 export async function getProductsByIds(businessId: string, ids: string[]): Promise<Product[]> {
   if (ids.length === 0) return [];
   const result = await query<Product>(
-    `select * from products where business_id = $1 and id = any($2::uuid[])`,
+    `select ${PRODUCT_COLUMNS} from products where business_id = $1 and id = any($2::uuid[])`,
     [businessId, ids],
   );
   return result.rows;
+}
+
+/** Serves the raw uploaded photo bytes — kept separate so listing queries never load bytea blobs. */
+export async function getProductPhotoData(id: string): Promise<{ data: Buffer; contentType: string } | null> {
+  const result = await query<{ image_data: Buffer; image_content_type: string }>(
+    `select image_data, image_content_type from products where id = $1 and image_content_type is not null`,
+    [id],
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  return { data: row.image_data, contentType: row.image_content_type };
 }
 
 export type ProductInput = {
@@ -92,7 +112,7 @@ export async function createProduct(businessId: string, input: ProductInput): Pr
     `insert into products
        (business_id, category_id, name, description, image_url, selling_price, cost_price, available_qty, is_active)
      values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-     returning *`,
+     returning ${PRODUCT_COLUMNS}`,
     [
       businessId,
       input.categoryId,
@@ -115,7 +135,7 @@ export async function updateProduct(businessId: string, id: string, input: Produ
        selling_price = $7, cost_price = $8, available_qty = $9, is_active = $10,
        updated_at = now()
      where business_id = $1 and id = $2
-     returning *`,
+     returning ${PRODUCT_COLUMNS}`,
     [
       businessId,
       id,
@@ -130,6 +150,19 @@ export async function updateProduct(businessId: string, id: string, input: Produ
     ],
   );
   return result.rows[0] ?? null;
+}
+
+/** Sets or clears the uploaded photo, independent of the rest of the product form. */
+export async function setProductPhoto(
+  businessId: string,
+  id: string,
+  photo: { data: Buffer; contentType: string } | null,
+): Promise<void> {
+  await query(
+    `update products set image_data = $3, image_content_type = $4, updated_at = now()
+     where business_id = $1 and id = $2`,
+    [businessId, id, photo?.data ?? null, photo?.contentType ?? null],
+  );
 }
 
 export async function setProductActive(businessId: string, id: string, isActive: boolean): Promise<void> {

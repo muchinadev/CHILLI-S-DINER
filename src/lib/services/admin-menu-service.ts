@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session";
 import { productSchema } from "@/lib/validation/product";
-import { createProduct, deleteProduct, setProductActive, updateProduct } from "@/lib/data/products";
+import { createProduct, deleteProduct, setProductActive, setProductPhoto, updateProduct } from "@/lib/data/products";
+import { processMealPhoto, PhotoProcessingError } from "@/lib/services/image-processing";
 
 export type ProductFormState = { error: string | null };
 
@@ -21,6 +22,12 @@ function parseProductForm(formData: FormData) {
   });
 }
 
+/** The file input is empty (no photo picked) vs. an actual upload — anything else isn't worth trying to process. */
+function getUploadedPhoto(formData: FormData): File | null {
+  const photo = formData.get("photo");
+  return photo instanceof File && photo.size > 0 ? photo : null;
+}
+
 export async function createProductAction(
   _prevState: ProductFormState,
   formData: FormData,
@@ -33,6 +40,17 @@ export async function createProductAction(
     return { error: parsed.error.issues[0]?.message ?? "Please check the form and try again." };
   }
 
+  const photoFile = getUploadedPhoto(formData);
+  let photo: { data: Buffer; contentType: string } | null = null;
+  if (photoFile) {
+    try {
+      photo = await processMealPhoto(photoFile);
+    } catch (error) {
+      if (error instanceof PhotoProcessingError) return { error: error.message };
+      throw error;
+    }
+  }
+
   const product = await createProduct(session.businessId, {
     name: parsed.data.name,
     description: parsed.data.description ?? "",
@@ -43,6 +61,10 @@ export async function createProductAction(
     availableQty: parsed.data.availableQty,
     isActive: parsed.data.isActive === "true",
   });
+
+  if (photo) {
+    await setProductPhoto(session.businessId, product.id, photo);
+  }
 
   revalidatePath("/admin/menu");
   revalidatePath("/");
@@ -62,6 +84,17 @@ export async function updateProductAction(
     return { error: parsed.error.issues[0]?.message ?? "Please check the form and try again." };
   }
 
+  const photoFile = getUploadedPhoto(formData);
+  let photo: { data: Buffer; contentType: string } | null = null;
+  if (photoFile) {
+    try {
+      photo = await processMealPhoto(photoFile);
+    } catch (error) {
+      if (error instanceof PhotoProcessingError) return { error: error.message };
+      throw error;
+    }
+  }
+
   const product = await updateProduct(session.businessId, productId, {
     name: parsed.data.name,
     description: parsed.data.description ?? "",
@@ -74,6 +107,13 @@ export async function updateProductAction(
   });
 
   if (!product) return { error: "Meal not found." };
+
+  const removePhoto = formData.get("removePhoto") === "true";
+  if (photo) {
+    await setProductPhoto(session.businessId, productId, photo);
+  } else if (removePhoto) {
+    await setProductPhoto(session.businessId, productId, null);
+  }
 
   revalidatePath("/admin/menu");
   revalidatePath("/");

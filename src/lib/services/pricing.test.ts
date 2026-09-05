@@ -10,6 +10,7 @@ function makeProduct(overrides: Partial<Product> = {}): Product {
     name: "Pilau with Beef",
     description: null,
     image_url: null,
+    image_content_type: null,
     selling_price: "350",
     cost_price: "140",
     available_qty: 10,

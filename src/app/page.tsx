@@ -2,6 +2,7 @@ import { getDefaultBusiness } from "@/lib/data/business";
 import { listAvailableProducts, listCategories } from "@/lib/data/products";
 import { StorefrontShell } from "@/components/customer/StorefrontShell";
 import { ProductCard } from "@/components/customer/ProductCard";
+import { productImageUrl } from "@/lib/products/image";
 
 // Menu availability and stock change in real time as orders come in — never
 // serve a stale, build-time-prerendered snapshot of the menu.
@@ -50,7 +51,7 @@ export default async function HomePage() {
                       id: product.id,
                       name: product.name,
                       description: product.description,
-                      imageUrl: product.image_url,
+                      imageUrl: productImageUrl(product),
                       price: Number(product.selling_price),
                       availableQty: product.available_qty,
                     }}

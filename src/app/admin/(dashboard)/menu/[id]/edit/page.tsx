@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth/session";
 import { getProductById, listCategories } from "@/lib/data/products";
 import { updateProductAction } from "@/lib/services/admin-menu-service";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { productImageUrl } from "@/lib/products/image";
 import { DeleteProductButton } from "./DeleteProductButton";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +34,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           availableQty: product.available_qty,
           isActive: product.is_active,
           imageUrl: product.image_url ?? "",
+          photoPreviewUrl: productImageUrl(product),
+          hasUploadedPhoto: product.image_content_type !== null,
         }}
       />
       <Link

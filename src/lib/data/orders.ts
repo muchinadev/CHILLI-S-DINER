@@ -2,6 +2,11 @@ import { PoolClient } from "pg";
 import { pool, query } from "@/lib/db/client";
 import type { PricedOrder } from "@/lib/services/pricing";
 import { deductIngredientsForOrder, restoreIngredientsForOrder } from "@/lib/data/inventory-consumption";
+import {
+  notifyAdminOrderEvent,
+  notifyCustomerOrderEvent,
+  type CustomerOrderEvent,
+} from "@/lib/services/notification-service";
 
 export type OrderStatus =
   | "new"
@@ -277,8 +282,49 @@ export async function updateOrderStatus(
     updated.rows[0].inventory_deducted = false;
   }
 
+  const notifyEvent = NOTIFY_STATUSES[toStatus];
+  if (notifyEvent) {
+    const customerRow = await runner.query<{ name: string; phone: string }>(
+      `select name, phone from customers where id = $1`,
+      [order.customer_id],
+    );
+    const customer = customerRow.rows[0];
+    if (customer) {
+      await notifyCustomerOrderEvent(order.business_id, customer.phone, order.order_number, notifyEvent, runner);
+      if (toStatus === "payment_confirmed") {
+        await notifyAdminOrderEvent(
+          order.business_id,
+          order.order_number,
+          customer.name,
+          Number(order.total),
+          "payment_received",
+          runner,
+        );
+      } else if (toStatus === "failed") {
+        await notifyAdminOrderEvent(
+          order.business_id,
+          order.order_number,
+          customer.name,
+          Number(order.total),
+          "payment_failed",
+          runner,
+        );
+      }
+    }
+  }
+
   return updated.rows[0];
 }
+
+const NOTIFY_STATUSES: Partial<Record<OrderStatus, CustomerOrderEvent>> = {
+  payment_confirmed: "payment_confirmed",
+  preparing: "preparing",
+  ready: "ready",
+  out_for_delivery: "out_for_delivery",
+  delivered: "delivered",
+  cancelled: "cancelled",
+  failed: "payment_failed",
+};
 
 export async function setOrderPaymentStatus(
   orderId: string,

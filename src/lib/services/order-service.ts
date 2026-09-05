@@ -9,6 +9,7 @@ import { findOrCreateCustomer, createAddress } from "@/lib/data/customers";
 import { createOrder } from "@/lib/data/orders";
 import { initiatePaymentForOrder } from "@/lib/services/payment-service";
 import { computeDiscount, findValidPromoByCode, incrementPromotionUsage } from "@/lib/data/promotions";
+import { notifyAdminOrderEvent, notifyCustomerOrderEvent } from "@/lib/services/notification-service";
 
 const FLAT_DELIVERY_FEE = 150;
 
@@ -95,6 +96,9 @@ export async function checkoutAction(_prevState: CheckoutState, formData: FormDa
   if (appliedPromotionId) {
     await incrementPromotionUsage(appliedPromotionId);
   }
+
+  await notifyCustomerOrderEvent(businessId, customer.phone, order.order_number, "received");
+  await notifyAdminOrderEvent(businessId, order.order_number, customer.name, Number(order.total), "new_order");
 
   await initiatePaymentForOrder(businessId, order.id, customer.phone);
 

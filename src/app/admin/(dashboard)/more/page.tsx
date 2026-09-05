@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/admin/deliveries", label: "Deliveries", icon: "🛵", description: "Assign riders, track delivery status" },
   { href: "/admin/inventory", label: "Inventory", icon: "📦", description: "Ingredient stock, low-stock warnings" },
   { href: "/admin/expenses", label: "Expenses", icon: "💵", description: "Ingredients, packaging, gas, and more" },
+  { href: "/admin/notifications", label: "Notifications", icon: "🔔", description: "Messages sent to customers & admin alerts" },
 ];
 
 export default function AdminMorePage() {

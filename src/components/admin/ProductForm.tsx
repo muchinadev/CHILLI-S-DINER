@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, type ChangeEvent } from "react";
 import type { ProductFormState } from "@/lib/services/admin-menu-service";
 import type { ProductCategory } from "@/lib/data/products";
 
@@ -23,10 +23,22 @@ export function ProductForm({
     availableQty: number;
     isActive: boolean;
     imageUrl: string;
+    photoPreviewUrl: string | null;
+    hasUploadedPhoto: boolean;
   };
   submitLabel: string;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const [preview, setPreview] = useState<string | null>(defaultValues?.photoPreviewUrl ?? null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+      setRemovePhoto(false);
+    }
+  }
 
   return (
     <form action={formAction} className="space-y-4">
@@ -125,8 +137,48 @@ export function ProductForm({
       </div>
 
       <div>
-        <label htmlFor="imageUrl" className="block text-sm font-medium text-stone-700">
-          Photo URL (optional)
+        <label htmlFor="photo" className="block text-sm font-medium text-stone-700">
+          Photo of the meal (optional)
+        </label>
+
+        {preview || defaultValues?.hasUploadedPhoto ? (
+          <div className="mt-2 flex items-center gap-3">
+            {preview && !removePhoto ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={preview} alt="Meal preview" className="h-20 w-20 rounded-xl object-cover" />
+            ) : null}
+            {defaultValues?.hasUploadedPhoto ? (
+              <label className="flex items-center gap-2 text-sm text-stone-600">
+                <input
+                  type="checkbox"
+                  name="removePhoto"
+                  value="true"
+                  checked={removePhoto}
+                  onChange={(e) => {
+                    setRemovePhoto(e.target.checked);
+                    if (e.target.checked) setPreview(null);
+                    else setPreview(defaultValues?.photoPreviewUrl ?? null);
+                  }}
+                  className="h-4 w-4 rounded border-stone-300"
+                />
+                Remove photo
+              </label>
+            ) : null}
+          </div>
+        ) : null}
+
+        <input
+          id="photo"
+          name="photo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleFileChange}
+          className="mt-2 block w-full text-sm text-stone-600 file:mr-3 file:rounded-full file:border-0 file:bg-brand file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+        />
+        <p className="mt-1 text-xs text-stone-400">JPG or PNG, up to 8MB. Take a photo or choose one from your gallery.</p>
+
+        <label htmlFor="imageUrl" className="mt-3 block text-sm font-medium text-stone-700">
+          Or paste a photo URL instead
         </label>
         <input
           id="imageUrl"
@@ -136,6 +188,7 @@ export function ProductForm({
           defaultValue={defaultValues?.imageUrl}
           className="mt-1 w-full rounded-lg border border-stone-300 px-4 py-3 text-base focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
+        <p className="mt-1 text-xs text-stone-400">Only used if you don&apos;t upload a photo above.</p>
       </div>
 
       <label className="flex items-center gap-2 text-sm font-medium text-stone-700">

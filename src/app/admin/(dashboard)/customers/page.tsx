@@ -23,7 +23,15 @@ export default async function AdminCustomersPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-stone-900">Customers</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-stone-900">Customers</h1>
+        <a
+          href="/admin/customers/export"
+          className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-stone-600 shadow-sm"
+        >
+          ⬇ Export CSV
+        </a>
+      </div>
 
       {winBackCustomers.length > 0 ? (
         <div className="rounded-2xl bg-white p-4 shadow-sm">

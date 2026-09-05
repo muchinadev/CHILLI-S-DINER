@@ -48,6 +48,15 @@ export default async function AdminOrderHistoryPage({
         </Link>
       </div>
 
+      <div className="flex justify-end">
+        <a
+          href={`/admin/orders/history/export?date=${date}`}
+          className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-stone-600 shadow-sm"
+        >
+          ⬇ Export CSV
+        </a>
+      </div>
+
       <div className="flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm">
         <Link
           href={`/admin/orders/history?date=${shiftDate(date, -1)}`}

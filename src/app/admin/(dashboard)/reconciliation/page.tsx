@@ -36,7 +36,7 @@ export default async function AdminReconciliationPage({
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-bold text-stone-900">Cash reconciliation</h1>
-        <p className="text-sm text-stone-500">What should have come in today vs. what's actually confirmed.</p>
+        <p className="text-sm text-stone-500">What should have come in today vs. what&apos;s actually confirmed.</p>
       </div>
 
       <div className="flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm">

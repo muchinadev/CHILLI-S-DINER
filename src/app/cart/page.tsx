@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
 import { formatKes } from "@/lib/format";
-import { SiteHeader } from "@/components/customer/SiteHeader";
+import { StorefrontShell } from "@/components/customer/StorefrontShell";
 
 export default function CartPage() {
   const { items, subtotal, updateQuantity, removeItem } = useCart();
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-32 pt-6">
+    <StorefrontShell>
+      <main className="relative z-10 mx-auto w-full max-w-2xl flex-1 px-4 pb-32 pt-6">
         <h1 className="mb-4 text-xl font-bold text-stone-900">Your Cart</h1>
 
         {items.length === 0 ? (
@@ -64,7 +63,7 @@ export default function CartPage() {
       </main>
 
       {items.length > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 border-t border-stone-200 bg-white p-4">
+        <div className="fixed inset-x-0 bottom-0 z-10 border-t border-stone-200 bg-white p-4">
           <div className="mx-auto flex max-w-2xl items-center justify-between">
             <div>
               <p className="text-xs text-stone-500">Subtotal</p>
@@ -79,6 +78,6 @@ export default function CartPage() {
           </div>
         </div>
       ) : null}
-    </div>
+    </StorefrontShell>
   );
 }

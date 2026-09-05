@@ -190,6 +190,17 @@ export async function listOrders(
   return result.rows;
 }
 
+export async function listOrdersByDate(businessId: string, date: string): Promise<OrderWithCustomer[]> {
+  const result = await query<OrderWithCustomer>(
+    `select o.*, c.name as customer_name, c.phone as customer_phone
+     from orders o join customers c on c.id = o.customer_id
+     where o.business_id = $1 and o.created_at::date = $2::date
+     order by o.created_at desc`,
+    [businessId, date],
+  );
+  return result.rows;
+}
+
 export async function listOrdersSince(businessId: string, since: Date): Promise<Order[]> {
   const result = await query<Order>(
     `select * from orders where business_id = $1 and created_at >= $2 order by created_at desc`,

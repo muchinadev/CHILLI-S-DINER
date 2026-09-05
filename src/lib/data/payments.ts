@@ -41,6 +41,20 @@ export async function getLatestPaymentForOrder(orderId: string): Promise<Payment
   return result.rows[0] ?? null;
 }
 
+/** Records a cash payment as immediately confirmed — there's no callback to wait on. */
+export async function recordCashPayment(
+  input: { orderId: string; amount: number },
+  client?: PoolClient,
+): Promise<PaymentRow> {
+  const runner = client ?? pool;
+  const result = await runner.query<PaymentRow>(
+    `insert into payments (order_id, provider, provider_reference, amount, status, confirmed_at)
+     values ($1, 'cash', null, $2, 'confirmed', now()) returning *`,
+    [input.orderId, input.amount],
+  );
+  return result.rows[0];
+}
+
 export async function markPaymentResolved(
   paymentId: string,
   status: "confirmed" | "failed",

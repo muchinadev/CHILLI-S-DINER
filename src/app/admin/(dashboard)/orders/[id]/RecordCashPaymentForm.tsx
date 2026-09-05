@@ -22,7 +22,7 @@ export function RecordCashPaymentForm({ orderId, total }: { orderId: string; tot
       >
         {pending ? "Recording…" : `Record cash payment of ${formatKes(total)}`}
       </button>
-      <p className="text-xs text-stone-400">Use this once you've physically collected cash for this order.</p>
+      <p className="text-xs text-stone-400">Use this once you&apos;ve physically collected cash for this order.</p>
       {state.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
     </form>
   );

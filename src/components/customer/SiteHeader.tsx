@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/lib/cart/CartContext";
+import { ChiliMark } from "./ChiliMark";
 
 export function SiteHeader() {
   const { itemCount } = useCart();
@@ -10,7 +11,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-10 border-b border-stone-200 bg-[var(--background)]/95 backdrop-blur">
       <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-1.5 text-2xl font-semibold text-brand [font-family:var(--font-script)]">
-          🌶️ Chilli&apos;s Diner
+          <ChiliMark className="h-7 w-7 shrink-0" />
+          Chilli&apos;s Diner
         </Link>
         <Link
           href="/cart"

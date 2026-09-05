@@ -4,7 +4,7 @@ import { getDefaultBusinessId } from "@/lib/data/business";
 import { getOrderByNumber, getOrderItems } from "@/lib/data/orders";
 import { formatKes, formatDateTime } from "@/lib/format";
 import { CUSTOMER_STATUS_LABEL, TRACKING_STEPS, TERMINAL_NEGATIVE_STATUSES } from "@/lib/orders/status-labels";
-import { SiteHeader } from "@/components/customer/SiteHeader";
+import { StorefrontShell } from "@/components/customer/StorefrontShell";
 import { AutoRefresh } from "./AutoRefresh";
 
 export default async function OrderTrackingPage({
@@ -23,10 +23,9 @@ export default async function OrderTrackingPage({
   const shouldPoll = order.status === "new" || order.status === "payment_pending";
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <SiteHeader />
+    <StorefrontShell>
       <AutoRefresh shouldPoll={shouldPoll} />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-6">
+      <main className="relative z-10 mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-6">
         <div className="rounded-2xl bg-white p-5 shadow-sm">
           <p className="text-sm text-stone-500">Order {order.order_number}</p>
           <h1 className="mt-1 text-xl font-bold text-stone-900">{CUSTOMER_STATUS_LABEL[order.status]}</h1>
@@ -104,6 +103,6 @@ export default async function OrderTrackingPage({
           ← Back to menu
         </Link>
       </main>
-    </div>
+    </StorefrontShell>
   );
 }

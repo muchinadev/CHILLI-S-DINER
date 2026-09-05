@@ -1,6 +1,6 @@
 import { getDefaultBusiness } from "@/lib/data/business";
 import { listAvailableProducts, listCategories } from "@/lib/data/products";
-import { SiteHeader } from "@/components/customer/SiteHeader";
+import { StorefrontShell } from "@/components/customer/StorefrontShell";
 import { ProductCard } from "@/components/customer/ProductCard";
 
 // Menu availability and stock change in real time as orders come in — never
@@ -22,9 +22,8 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-6">
+    <StorefrontShell>
+      <main className="relative z-10 mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-6">
         <section className="mb-6 rounded-2xl bg-brand p-6 text-white">
           <p className="text-sm font-medium tracking-wide text-brand-100 uppercase">Good food. Every day.</p>
           <h1 className="mt-1 text-3xl font-semibold [font-family:var(--font-display)]">
@@ -62,6 +61,6 @@ export default async function HomePage() {
           ))
         )}
       </main>
-    </div>
+    </StorefrontShell>
   );
 }

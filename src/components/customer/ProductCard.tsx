@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart/CartContext";
 import { formatKes } from "@/lib/format";
+import { PlateDoodle } from "./doodles";
 
 export type ProductCardData = {
   id: string;
@@ -40,7 +41,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-3xl">🍽️</div>
+          <div className="flex h-full w-full items-center justify-center text-brand/25">
+            <PlateDoodle className="h-12 w-12" />
+          </div>
         )}
       </div>
       <div className="flex flex-1 flex-col justify-between">
